@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.ericsouza.designpatterns.abstractchain.CartPriceModifierAbstractChain;
 import com.ericsouza.designpatterns.builder.CartContext;
 import com.ericsouza.designpatterns.interfacechain.CartPriceModifierChain;
 
@@ -25,8 +26,11 @@ public class CartController {
 	@Autowired
 	CartPriceModifierChain cartPriceModifierChain;
 
+	@Autowired
+	CartPriceModifierAbstractChain cartPriceModifierAbstractChain;
 
-	@GetMapping("/{cartId}")
+
+	@GetMapping("/interface/{cartId}")
 	public CartDTO getCart(@PathVariable Long cartId, @RequestParam(required = false) String couponCode) {
 		Optional<Cart> optionalCart = cartRepository.findById(cartId);
 
@@ -50,5 +54,31 @@ public class CartController {
 		cartPrice = cartPriceModifierChain.apply(cartContext, cartPrice);
 
 		return new CartDTO(cartPrice);
+	}
+
+	@GetMapping("/abstract/{cartId}")
+	public CartDTO getCartUsingAbstract(@PathVariable Long cartId, @RequestParam(required = false) String couponCode) {
+		Optional<Cart> optionalCart = cartRepository.findById(cartId);
+
+		if(!optionalCart.isPresent()) {
+			throw new ResponseStatusException(
+					HttpStatus.NOT_FOUND, "entity not found"
+					);
+		}
+
+		Cart cart = optionalCart.get();
+
+		CartPrice cartPrice = new CartPrice(cart.getPrice());
+
+		CartContext cartContext = CartContext.builder()
+				.withCartId(cart.getId())
+				.withUserId(cart.getOwnerId())
+				.withCouponCode(couponCode)
+				.withItems(cart.getItems())
+				.build();
+
+		CartPrice price = cartPriceModifierAbstractChain.execute(cartContext, cartPrice);
+
+		return new CartDTO(price);
 	}
 }
