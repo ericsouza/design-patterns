@@ -17,6 +17,8 @@ public class Cart {
 	@OneToMany(mappedBy="cart")
 	private Set<CartItem> items;
 
+	private Long ownerId;
+
 	public Cart() {
 
 	}
@@ -27,6 +29,14 @@ public class Cart {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(Long ownerId) {
+		this.ownerId = ownerId;
 	}
 
 	public Set<CartItem> getItems() {

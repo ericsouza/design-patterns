@@ -1,6 +1,5 @@
 package com.ericsouza.designpatterns.commons;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -27,24 +27,24 @@ public class CartController {
 
 
 	@GetMapping("/{cartId}")
-	public CartDTO getCart(@PathVariable Long cartId) {
-		Optional<Cart> cart = cartRepository.findById(cartId);
+	public CartDTO getCart(@PathVariable Long cartId, @RequestParam(required = false) String couponCode) {
+		Optional<Cart> optionalCart = cartRepository.findById(cartId);
 
-		if(!cart.isPresent()) {
+		if(!optionalCart.isPresent()) {
 			throw new ResponseStatusException(
 					HttpStatus.NOT_FOUND, "entity not found"
 					);
 		}
 
-		CartPrice cartPrice = new CartPrice(cart.get().getPrice());
+		Cart cart = optionalCart.get();
 
-		//new CartContext(1L, Collections.emptySet(), "JAVA17", 3L)
+		CartPrice cartPrice = new CartPrice(cart.getPrice());
 
 		CartContext cartContext = CartContext.builder()
-				.withCartId(1L)
-				.withUserId(3L)
-				.withCouponCode("JAVA17")
-				.withItems(Collections.emptySet())
+				.withCartId(cart.getId())
+				.withUserId(cart.getOwnerId())
+				.withCouponCode(couponCode)
+				.withItems(cart.getItems())
 				.build();
 
 		cartPrice = cartPriceModifierChain.apply(cartContext, cartPrice);

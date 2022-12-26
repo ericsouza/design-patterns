@@ -2,9 +2,9 @@ INSERT INTO users (id, name, role) VALUES (1, 'Someone', 'normal');
 INSERT INTO users (id, name, role) VALUES (2, 'Anyone', 'normal');
 INSERT INTO users (id, name, role) VALUES (3, 'The CEO', 'owner');
 
-INSERT INTO cart (id) VALUES (1);
-INSERT INTO cart (id) VALUES (2);
-INSERT INTO cart (id) VALUES (3);
+INSERT INTO cart (id, owner_id) VALUES (1, 1);
+INSERT INTO cart (id, owner_id) VALUES (2, 2);
+INSERT INTO cart (id, owner_id) VALUES (3, 3);
 
 INSERT INTO cart_item (id, cart_id, quantity, unit_price) VALUES (1, 1, 2, 9.99);
 INSERT INTO cart_item (id, cart_id, quantity, unit_price) VALUES (2, 1, 1, 9.99);

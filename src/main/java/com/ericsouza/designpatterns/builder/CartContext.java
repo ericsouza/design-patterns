@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.ericsouza.designpatterns.commons.CartItem;
 
 public class CartContext {
 
@@ -35,7 +38,7 @@ public class CartContext {
 		return Optional.ofNullable(userId);
 	}
 
-	class Item {
+	static class Item {
 		private BigDecimal price;
 
 		Item(BigDecimal price) {
@@ -70,8 +73,8 @@ public class CartContext {
 			return this;
 		}
 
-		public CartContextBuilder withItems(Set<Item> items) {
-			this.items = items;
+		public CartContextBuilder withItems(Set<CartItem> items) {
+			this.items = items.stream().map(item -> new Item(item.getPrice())).collect(Collectors.toSet());
 			return this;
 		}
 
