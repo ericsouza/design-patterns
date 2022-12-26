@@ -25,6 +25,7 @@ public class CartController {
 	@Autowired
 	CartPriceModifierChain cartPriceModifierChain;
 
+
 	@GetMapping("/{cartId}")
 	public CartDTO getCart(@PathVariable Long cartId) {
 		Optional<Cart> cart = cartRepository.findById(cartId);
@@ -37,7 +38,16 @@ public class CartController {
 
 		CartPrice cartPrice = new CartPrice(cart.get().getPrice());
 
-		cartPrice = cartPriceModifierChain.apply(new CartContext(1L, Collections.emptySet(), "JAVA17", 3L), cartPrice);
+		//new CartContext(1L, Collections.emptySet(), "JAVA17", 3L)
+
+		CartContext cartContext = CartContext.builder()
+				.withCartId(1L)
+				.withUserId(3L)
+				.withCouponCode("JAVA17")
+				.withItems(Collections.emptySet())
+				.build();
+
+		cartPrice = cartPriceModifierChain.apply(cartContext, cartPrice);
 
 		return new CartDTO(cartPrice);
 	}
